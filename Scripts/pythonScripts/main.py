@@ -93,7 +93,7 @@ def train_model(file_path):
     X_transformed = pipeline.fit_transform(X)
     X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42)
     
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(n_estimators=150, random_state=40,n_jobs=-1)
     model.fit(X_train, y_train)
     
     return pipeline, model, categorical_cols, text_cols, df, target_col
@@ -117,14 +117,6 @@ if __name__ == "__main__":
 
     data = sys.argv 
 
-    gender = "male"
-    course = "b.tech"
-    speclization = ""
-    additionalCertificates = ""
-    working = ""
-    areaOfInterest = ""
-    skills = ""
-
     user_input = {}
     
 
@@ -136,6 +128,7 @@ if __name__ == "__main__":
 
     output = {
         "result": predict_career(pipeline, model, categorical_cols, text_cols, df, target_col, user_input),
+        "mydata":user_input
     }
 
     sys.stdout.write(json.dumps(output))

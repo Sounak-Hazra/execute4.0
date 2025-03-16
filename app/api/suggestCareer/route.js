@@ -7,7 +7,7 @@ export async function POST(request) {
         const req = await request.json();
         console.log(req);
 
-        const { course, speclization, certifications: additionalCertificates, working, interests: areaOfInterest, skills } = req;
+        const { course,specialization:speclization, certifications: additionalCertificates, working, interests: areaOfInterest, skills,gender } = req;
 
         const pythonScriptPath = path.join(process.cwd(), "/Scripts/pythonScripts/main.py");
 
@@ -16,13 +16,13 @@ export async function POST(request) {
         return new Promise((resolve, reject) => {
             const py = spawn("python", [
                 pythonScriptPath,
-                "male",
+                gender,
                 course,
                 speclization,
-                additionalCertificates,
-                working,
-                areaOfInterest,
-                skills,
+                additionalCertificates ? "Yes" : "No",
+                working ? "Yes" : "NO",
+                areaOfInterest.join(","),
+                skills.join(","),
             ]);
 
             let career = "";
@@ -31,7 +31,7 @@ export async function POST(request) {
             py.stdout.on("data", (data) => {
                 try {
                     const res = JSON.parse(data.toString());
-                    console.log(res.result);
+                    console.log(res);
                     career = res.result;
                 } catch (error) {
                     errorOutput = "Error parsing Python output.";
@@ -55,6 +55,7 @@ export async function POST(request) {
         });
 
     } catch (error) {
+        console.log(error.message)
         return NextResponse.json({ message: "Internal server error", error: error.toString() }, { status: 500 });
     }
 }

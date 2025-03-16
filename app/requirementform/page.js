@@ -9,16 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import userData from '@/schemas/userData';
+import LoadingOverlay from '../components/Loader';
+import { useRouter } from 'next/navigation';
 
 
 const page = () => {
 
     const [isLoading, setIsLoading] = useState(false)
-    const [data,setData] = useState("")
+    const [data, setData] = useState("")
+
+    const router = useRouter()
     const form = useForm({
         resolver: zodResolver(userData),
         defaultValues: {
             name: "",
+            gender: "",
             course: "",
             specialization: "",
             interests: [],
@@ -33,7 +38,7 @@ const page = () => {
         },
     });
 
-    
+
 
     const onSubmit = async (data) => {
         console.log(data)
@@ -41,17 +46,17 @@ const page = () => {
             setIsLoading(true)
             const res = await fetch("api/suggestCareer", {
                 method: "POST",
-                body:JSON.stringify(data)
+                body: JSON.stringify(data)
             })
 
-            const responce  = await res.json()
+            const responce = await res.json()
             if (!res.ok) {
                 console.log("Error occured ")
             }
             else {
-                console.log(responce.message)
+                router.push(`/whatyouwilldo/${responce.message.replaceAll(" ","-")}`)
             }
-        } catch(error) {
+        } catch (error) {
             console.log(error.message)
         } finally {
             setIsLoading(false)
@@ -64,8 +69,17 @@ const page = () => {
     };
     return (
         <>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-lg mx-auto p-6 border rounded-lg shadow">
+           {isLoading && <LoadingOverlay />}
+            <div className="intro">
+                <h1 className=" headline">AI-Driven Career Guidance</h1>
+                <h1>Confused about career ? </h1>
+                <h2>Don't worry Mentor-25 will help you find your career path according to your skills and interests .</h2>
+                <h2>Fill up the form bellow to get guidance about your career</h2>
+            </div>
+            <Form {...form} >
+                <h2 className="headline">Career Prediction Form</h2>
+                <p className="intro">Fill in the details to predict your career path.</p>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 container">
                     <FormField
                         control={form.control}
                         name="name"
@@ -73,7 +87,21 @@ const page = () => {
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="Enter your name" />
+                                    <Input {...field} placeholder="Enter your name" className="input-field" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="gender"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Gender</FormLabel>
+                                <FormControl>
+                                    <Input {...field} placeholder="Enter your gender" className="input-field" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -87,7 +115,7 @@ const page = () => {
                             <FormItem>
                                 <FormLabel>Course</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="Your Course" />
+                                    <Input {...field} placeholder="Your Course" className="input-field" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -101,7 +129,7 @@ const page = () => {
                             <FormItem>
                                 <FormLabel>Specialization</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="Your Specialization" />
+                                    <Input {...field} placeholder="Your Specialization" className="input-field" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -115,9 +143,12 @@ const page = () => {
                             <FormItem>
                                 <FormLabel>CGPA</FormLabel>
                                 <FormControl>
-                                    <Input type="number"
+                                    <Input
+                                        type="number"
                                         onChange={(e) => form.setValue("cgpa", Number(e.target.value))}
-                                        placeholder="Your CGPA" />
+                                        placeholder="Your CGPA"
+                                        className="input-field"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -134,6 +165,7 @@ const page = () => {
                                     <Input
                                         placeholder="e.g. Web Dev, AI, Cybersecurity"
                                         onChange={(e) => handleMultiInput("interests", e.target.value)}
+                                        className="input-field"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -151,6 +183,7 @@ const page = () => {
                                     <Input
                                         placeholder="e.g. React, Node.js, Python"
                                         onChange={(e) => handleMultiInput("skills", e.target.value)}
+                                        className="input-field"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -182,6 +215,7 @@ const page = () => {
                                         disabled={!form.watch("certifications")}
                                         placeholder="List your course titles"
                                         onChange={(e) => handleMultiInput("coursetitle", e.target.value)}
+                                        className="input-field"
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -212,7 +246,9 @@ const page = () => {
                                     <Input
                                         disabled={!form.watch("working")}
                                         {...field}
-                                        placeholder="Your Job Title" />
+                                        placeholder="Your Job Title"
+                                        className="input-field"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -235,7 +271,6 @@ const page = () => {
                     <FormField
                         control={form.control}
                         name="fieldofmasters"
-
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Field of Masters</FormLabel>
@@ -243,16 +278,19 @@ const page = () => {
                                     <Input
                                         disabled={!form.watch("masters")}
                                         {...field}
-                                        placeholder="Field of Masters" />
+                                        placeholder="Field of Masters"
+                                        className="input-field"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
 
-                    <Button type="submit" className="w-full">Submit</Button>
+                    <Button  type="submit" className="w-full cursor-pointer submit-btn">Submit</Button>
                 </form>
             </Form>
+
 
         </>
     )

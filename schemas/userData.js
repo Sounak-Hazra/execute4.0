@@ -16,6 +16,7 @@ import { z } from "zod"
 
 const userData = z.object({
     name: z.string().min(5, { message: "Minium length should be 5 characters." }),
+    gender:z.string(),
     course: z.string(),
     specialization: z.string(),
     interests: z.array(z.string()),
