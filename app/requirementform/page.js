@@ -54,7 +54,7 @@ const page = () => {
                 console.log("Error occured ")
             }
             else {
-                router.push(`/whatyouwilldo/${responce.message.replaceAll(" ","-")}`)
+                router.push(`/whatyouwilldo/${responce.message.trim().replaceAll(" ","-")}`)
             }
         } catch (error) {
             console.log(error.message)
